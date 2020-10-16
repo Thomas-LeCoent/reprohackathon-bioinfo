@@ -1,5 +1,4 @@
 # reprohackathon-bioinfo
-test test test test test
 
 The goal is to reproduce parts of the analysis described in these papers :<br>
   https://pubmed.ncbi.nlm.nih.gov/23313955/<br>
