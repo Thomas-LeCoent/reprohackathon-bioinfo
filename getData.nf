@@ -6,8 +6,8 @@ process downloadFastq{
     input: 
     val SRAID from ID_LIST
 
-    // output: 
-    // file "${SRAID}.sra" into SRA_files
+    output: 
+    file "${SRAID}.sra" into SRA_files
 
     script:
     """
