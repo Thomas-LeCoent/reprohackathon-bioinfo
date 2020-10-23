@@ -15,3 +15,13 @@ process SRA{
     rm *.sra
     """
 }
+process genomeAnnot{
+    publishDir "gtf/"
+    output:
+    file "annot.gtf" into gtf
+    script:
+    """
+    wget ftp://ftp.ensembl.org/pub/release-101/gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz
+    gunzip -c *.gtf.gz > annot.gtf
+    """
+}
