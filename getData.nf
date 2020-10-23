@@ -1,16 +1,16 @@
 /* Test */
 
-ALL_SRAID = "https://booster.pasteur.fr/static/files/primates/ref.nw.gz"
+ID_LIST = Channel.from("SRR636567", "SRR636566")
 
 process downloadFastq{
     input: 
-    val SRAID from ALL_SRAID
+    val SRAID from ID_LIST
 
-    // output: 
-    // file "${SRAID}.sra" into fastq
+    output: 
+    file "${SRAID}.sra" into SRA_files
 
     script:
     """
-    echo ${SRAID}
+    wget -O ${SRAID}.sra https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-7/${SRAID}/${SRAID}.1
     """
 }   
