@@ -1,5 +1,6 @@
+//accesion id
 SRAID=Channel.from("SRR628582", "SRR628583", "SRR628584", "SRR628585", "SRR628586", "SRR628587", "SRR628588", "SRR628589", "SRR636531", "SRR636532", "SRR636533")
-
+//Download fastq files
 process SRA{
     publishDir "fastq/"
     input:
@@ -15,6 +16,7 @@ process SRA{
     rm *.sra
     """
 }
+//Download annotation in .gtf
 process genomeAnnot{
     publishDir "gtf/"
     output:
@@ -25,3 +27,22 @@ process genomeAnnot{
     gunzip -c *.gtf.gz > annot.gtf
     """
 }
+//human chromosomes
+ID=Channel.from(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"MT")
+//Download the references .fasta
+process downloadHumanGenome{
+    publishDir "fastagz/"
+    input:
+        val id from ID
+    output:
+        file "ref.fa" into fasta
+    script:
+    """
+    wget ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.${id}.fa.gz
+    gunzip -c *fa.gz > ref.fa
+    """
+}
+//Put all the extracted files in a single one
+fasta
+    .collectFile()
+    .println()
