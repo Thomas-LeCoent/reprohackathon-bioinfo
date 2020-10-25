@@ -16,9 +16,11 @@ process downloadHumanGenome{
 }
 
 process createGenomeIndex{
+
+    container="evolbioinfo/star:v2.7.6a"
+    
     input:
         file (genome) from fasta.collectFile()
-        
         
     script:
     """
