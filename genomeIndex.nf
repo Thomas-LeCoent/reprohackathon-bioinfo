@@ -15,16 +15,7 @@ process downloadHumanChromosomes{
 }
 
 
-process assemblingGenome{
-    input:
-        file(file) from ChrFiles
-    output:
-        file "ref.fa" into HumanGenomeFasta
-    script:
-    """
-        gunzip -c ${file} >> ref.fa
-    """
-}
+HumanGenomeFasta = ChrFiles.collectFile()
 
 HumanGenomeFasta.println()
 
