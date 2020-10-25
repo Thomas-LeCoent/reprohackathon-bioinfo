@@ -1,19 +1,20 @@
 //Download the references .fasta for each human chromosome
 
-ID=Channel.from(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"MT")
+ChrNames = Channel.from(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"MT")
 cpus = 8
 
 process downloadHumanChromosomes{
     input:
-        val id from ID
+        val chr from ChrNames
     output:
-        file "ref.fa" into fasta
+        file "Homo_sapiens.GRCh38.dna.chromosome.${chr}.fa.gz" into Chr_fasta_gz
     script:
     """
-    wget ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.${id}.fa.gz
+    wget ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.${chr}.fa.gz
     """
 }
 
+Chr_fasta_gz.println()
 
 /*
 process assemblingGenome{
