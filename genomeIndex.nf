@@ -19,7 +19,7 @@ fasta
     .collectFile()
     .println()
 
-process createGenomeIndex{
+/* process createGenomeIndex{
     input:
         file(ref.fa) from fasta
         
@@ -31,4 +31,4 @@ process createGenomeIndex{
     mkdir ref
     STAR --runThreadN ${cpus} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ${ref.fa}
     """
-}
+} */
