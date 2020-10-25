@@ -26,7 +26,7 @@ process assemblingGenome{
     """
 }
 
-HumanGenomeFasta.print(ln)
+HumanGenomeFasta.println()
 
 /*
 process createGenomeIndex{
