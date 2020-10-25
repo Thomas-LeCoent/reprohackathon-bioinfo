@@ -15,7 +15,7 @@ process downloadHumanGenome{
     """
 }
 
-fasta.collectFile("ref.fa")
+fasta.collectFile()
 
 process createGenomeIndex{
     input:
