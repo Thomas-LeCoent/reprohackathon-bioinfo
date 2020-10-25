@@ -15,7 +15,7 @@ process downloadHumanGenome{
     """
 }
 
-/*fasta.collectFile()
+fasta.collectFile("ref.fa")
 
 process createGenomeIndex{
     input:
@@ -29,4 +29,4 @@ process createGenomeIndex{
     mkdir ref
     STAR --runThreadN ${cpus} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ${ref.fa}
     """
-}*/
+}
