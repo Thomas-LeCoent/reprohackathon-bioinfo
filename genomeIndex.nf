@@ -16,7 +16,7 @@ process downloadHumanGenome{
 
 fasta.println()
 
-fasta.collectFile().println()
+// fasta.collectFile().println()
 
 /* process createGenomeIndex{
     input:
