@@ -11,7 +11,7 @@ process downloadHumanChromosomes{
     script:
     """
     wget ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.${chr}.fa.gz
-    gunzip *.fa.gz > ref.fa
+    gunzip -c *.fa.gz > ref.fa
     """
 }
 
