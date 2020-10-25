@@ -42,15 +42,13 @@ process downloadHumanGenome{
     gunzip -c *fa.gz > ref.fa
     """
 }
-//Put all the extracted files in a single one
-
-    .println()
     
 cpus = 8
 
 process createGenomeIndex{    
     input:
-        file (genome) from fasta.collectFile()
+        file (genome) from fasta.collectFile() //Put all the extracted files in a single one
+
         
     script:
     """
