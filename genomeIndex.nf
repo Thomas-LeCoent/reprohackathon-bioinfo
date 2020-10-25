@@ -3,7 +3,7 @@
 ID=Channel.from(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"MT")
 cpus = 8
 
-process downloadHumanGenome{
+process downloadHumanChromosomes{
     input:
         val id from ID
     output:
@@ -11,12 +11,17 @@ process downloadHumanGenome{
     script:
     """
     wget ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.${id}.fa.gz
-    gunzip -c *.fa.gz > ref.fa
     """
 }
 
-process createGenomeIndex{
 
+/*
+process assemblingGenome{
+    input
+}
+
+
+process createGenomeIndex{
     container="evolbioinfo/star:v2.7.6a"
     
     input:
@@ -27,4 +32,4 @@ process createGenomeIndex{
     mkdir ref
     STAR --runThreadN ${cpus} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ${genome}
     """
-} 
+}*/
