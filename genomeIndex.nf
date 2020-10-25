@@ -15,18 +15,17 @@ process downloadHumanChromosomes{
     """
 }
 
-ChrFiles.collectFile().println()
 
-/*
 process createGenomeIndex{
-    container="evolbioinfo/star:v2.7.6a"
+    container: 
+        "evolbioinfo/star:v2.7.6a"
     
     input:
-        file (genome) from fasta.collectFile()
+        file (genome) from ChrFiles.collectFile()
         
     script:
     """
     mkdir ref
     STAR --runThreadN ${cpus} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ${genome}
     """
-}*/
+}
