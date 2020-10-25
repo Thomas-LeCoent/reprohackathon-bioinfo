@@ -15,7 +15,7 @@ process downloadHumanChromosomes{
     """
 }
 
-
+/*
 process createGenomeIndex{
     container "evolbioinfo/star:v2.7.6a"
     
@@ -28,3 +28,4 @@ process createGenomeIndex{
     STAR --runThreadN ${cpus} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ${genome}
     """
 }
+*/
