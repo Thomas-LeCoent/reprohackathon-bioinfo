@@ -7,10 +7,11 @@ process downloadHumanChromosomes{
     input:
         val chr from ChrNames
     output:
-        file "Homo_sapiens.GRCh38.dna.chromosome.${chr}.fa.gz" into ChrFiles
+        file "Homo_sapiens.GRCh38.dna.chromosome.${chr}.fa" into ChrFiles
     script:
     """
     wget ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.${chr}.fa.gz
+    gunzip *.fa.gz > Homo_sapiens.GRCh38.dna.chromosome.${chr}.fa
     """
 }
 
