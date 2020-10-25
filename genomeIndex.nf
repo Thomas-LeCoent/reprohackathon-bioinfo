@@ -7,21 +7,28 @@ process downloadHumanChromosomes{
     input:
         val chr from ChrNames
     output:
-        file "Homo_sapiens.GRCh38.dna.chromosome.${chr}.fa.gz" into Chr_fasta_gz
+        file "Homo_sapiens.GRCh38.dna.chromosome.${chr}.fa.gz" into ChrFiles
     script:
     """
     wget ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.${chr}.fa.gz
     """
 }
 
-Chr_fasta_gz.println()
 
-/*
 process assemblingGenome{
-    input
+    input:
+        file(file) from ChrFiles
+    output:
+        file "ref.fa" into HumanGenomeFasta
+    script:
+    """
+        gunzip -c ${file} >> ref.fa
+    """
 }
 
+HumanGenomeFasta.print(ln)
 
+/*
 process createGenomeIndex{
     container="evolbioinfo/star:v2.7.6a"
     
