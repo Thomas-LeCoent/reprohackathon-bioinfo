@@ -15,9 +15,7 @@ process downloadHumanChromosomes{
 }
 
 
-HumanGenomeFasta = ChrFiles.collectFile()
-
-HumanGenomeFasta.println()
+ChrFiles.collectFile().println()
 
 /*
 process createGenomeIndex{
