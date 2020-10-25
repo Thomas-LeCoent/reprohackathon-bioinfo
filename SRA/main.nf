@@ -43,6 +43,26 @@ process downloadHumanGenome{
     """
 }
 //Put all the extracted files in a single one
-fasta
-    .collectFile()
+
     .println()
+    
+cpus = 8
+
+process createGenomeIndex{    
+    input:
+        file (genome) from fasta.collectFile()
+        
+    script:
+    """
+    STAR --runThreadN ${cpus} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ${genome}
+    """
+}
+
+// Erreur étrange 
+/* terminate called after throwing an instance of 'std::bad_alloc'
+    what():  std::bad_alloc
+  terminate called recursively
+  terminate called recursively
+  terminate called recursively
+  .command.sh: line 2:     7 Aborted                 (core dumped) STAR --runThreadN 8 --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ref.fa
+*/
