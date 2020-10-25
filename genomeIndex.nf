@@ -4,6 +4,7 @@ ChrNames = Channel.from(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22
 cpus = 8
 
 process downloadHumanChromosomes{
+    publishDir "humanGenome/"
     input:
         val chr from ChrNames
     output:
@@ -11,12 +12,10 @@ process downloadHumanChromosomes{
     script:
     """
     wget ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.${chr}.fa.gz
-    gunzip *.fa.gz > ${chr}.fa
+    gunzip *.fa.gz >> ref.fa
     """
 }
 
-
-ChrFiles.collectFile().println()
 
 /*
 process createGenomeIndex{
