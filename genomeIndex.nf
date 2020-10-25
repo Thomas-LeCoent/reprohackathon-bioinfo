@@ -7,7 +7,7 @@ process downloadHumanGenome{
     input:
         val id from ID
     output:
-        file "ref.fa" into fasta
+        file "chr_${id}.fa" into fasta
     script:
     """
     wget ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.${id}.fa.gz
