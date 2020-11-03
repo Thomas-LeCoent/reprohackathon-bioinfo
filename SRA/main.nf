@@ -1,5 +1,5 @@
 //accesion id
-SRAID=Channel.from("SRR628582", "SRR628583", "SRR628584", "SRR628585", "SRR628586", "SRR628587", "SRR628588", "SRR628589", "SRR636531", "SRR636532", "SRR636533")
+SRAID=Channel.from("SRR628585")
 //Download fastq files
 process SRA{
     publishDir "fastq/"
@@ -7,6 +7,7 @@ process SRA{
         val SRAID from SRAID
     output:
     file "${SRAID}_*.fastq.gz" into fastq
+
     script:
     """
     apt-get -y update
@@ -43,24 +44,47 @@ process downloadHumanGenome{
     """
 }
     
-cpus = 8
+cpus = 16
 
-process createGenomeIndex{    
-    input:
-        file (genome) from fasta.collectFile() //Put all the extracted files in a single one
+process createGenomeIndex{
 
-        
-    script:
-    """
-    STAR --runThreadN ${cpus} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ${genome}
-    """
+	input:
+	file (genome) from fasta.collectFile() //Put all the extracted files in a single one
+	output:
+	file "ref" into index_chan 
+
+	script:
+	"""
+	STAR --runThreadN ${cpus} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ${genome}
+	"""
 }
 
-// Erreur étrange 
-/* terminate called after throwing an instance of 'std::bad_alloc'
-    what():  std::bad_alloc
-  terminate called recursively
-  terminate called recursively
-  terminate called recursively
-  .command.sh: line 2:     7 Aborted                 (core dumped) STAR --runThreadN 8 --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ref.fa
-*/
+Channel
+	.fromFilePairs('fastq/*_{1,2}.fastq.gz')
+	.set{fastq}
+
+process mapping{
+	input:
+	set sampleID, file(reads) from fastq
+	file ref from index_chan
+
+	output:
+	file "${sampleID}.bam" into bam_chan
+
+	script:
+	"""
+	
+	STAR --outSAMstrandField intronMotif \
+	--outFilterMismatchNmax 4 \
+	--outFilterMultimapNmax 10 
+	--genomeDir ref \
+	--readFilesIn < (gunzip -c ${sampleID}_1.fastq.gz) < (gunzip -c ${sampleID}_2.fastq.gz) \
+	--runThreadN 8 \
+	--outSAMunmapped None \
+	--outSAMtype BAM SortedByCoordinate \
+	--outStd BAM_SortedByCoordinate \
+	--genomeLoad NoSharedMemory \
+	--limitBAMsortRAM 2 \
+	> ${sampleID}.bam
+	"""
+}
