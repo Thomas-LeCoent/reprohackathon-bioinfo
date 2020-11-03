@@ -48,7 +48,7 @@ process downloadHumanGenome{
 cpus = 16
 
 process createGenomeIndex{
-
+	publishDir "genomeIndex/"
 	input:
 	file (genome) from fasta.collectFile() //Put all the extracted files in a single one
 	output:
@@ -60,13 +60,12 @@ process createGenomeIndex{
 	"""
 }
 
-Channel
-	.fromFilePairs('fastq/*_{1,2}.fastq.gz')
-	.set{fastq}
+fastq = Channel.fromFilePairs('fastq/*_{1,2}.fastq.gz', flat:true)
 
 process mapping{
+	publishDir "BAM/"
 	input:
-	set sampleID, file(reads) from fastq
+	tuple val(sampleID), file(r1), file(r2) from fastq
 	file ref from index_chan
 
 	output:
@@ -74,18 +73,17 @@ process mapping{
 
 	script:
 	"""
-	
 	STAR --outSAMstrandField intronMotif \
 	--outFilterMismatchNmax 4 \
-	--outFilterMultimapNmax 10 
+	--outFilterMultimapNmax 10 \
 	--genomeDir ref \
-	--readFilesIn < (gunzip -c ${sampleID}_1.fastq.gz) < (gunzip -c ${sampleID}_2.fastq.gz) \
-	--runThreadN 8 \
+	--readFilesIn <(gunzip -c ${r1}) <(gunzip -c ${r1}) \
+	--runThreadN 16 \
 	--outSAMunmapped None \
 	--outSAMtype BAM SortedByCoordinate \
 	--outStd BAM_SortedByCoordinate \
 	--genomeLoad NoSharedMemory \
-	--limitBAMsortRAM 2 \
+	--limitBAMsortRAM 100000000 \
 	> ${sampleID}.bam
 	"""
 }
