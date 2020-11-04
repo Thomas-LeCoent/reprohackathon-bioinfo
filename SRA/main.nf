@@ -5,9 +5,9 @@ SRAID=Channel.from("SRR628585")
 process SRA{
     publishDir "fastq/"
     input:
-        val SRAID from SRAID
+	val SRAID from SRAID
     output:
-    file "${SRAID}_*.fastq.gz" into fastq
+	file "${SRAID}_*.fastq.gz" into fastq
 
     script:
     """
@@ -85,5 +85,36 @@ process mapping{
 	--genomeLoad NoSharedMemory \
 	--limitBAMsortRAM 100000000 \
 	> ${sampleID}.bam
+	"""
+}
+process samtools{
+	publishDir "bam/"
+	
+	input:
+	file(bam_to_index) from bam_chan
+
+	output:
+	file "${bam_to_index}.bai" into end
+	file "$bam_to_index" into ready_to_count
+	
+	script:
+	"""
+	samtools index $bam_to_index > ${bam_to_index.baseName}.bai
+	"""
+}
+
+process read_count{
+	publishDir "read_count/"
+
+	input:
+	file(bam) from ready_to_count
+	file(gtf) from gtf
+
+	output:
+	file "${bam.baseName}.counts" into read_count
+
+	script:
+	"""
+	featureCounts $bam -T $cpus -t gene -g gene_id -s 0 -a $gtf -o ${bam.baseName}.counts
 	"""
 }
