@@ -8,5 +8,5 @@ They performed RNA-Seq in samples from patients with uveal melanoma. Some sample
 
 To run the pipeline on IFB Cloub :  Appliance BioPipes :
 
-conda activate
-nextflow run main.nf -c nextflow.config -resume
+> conda activate
+> nextflow run main.nf -c nextflow.config -resume
