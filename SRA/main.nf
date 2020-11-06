@@ -89,12 +89,12 @@ process createGenomeIndex{
 }
 
 fastq = Channel.fromFilePairs('fastq/*_{1,2}.fastq.gz', flat:true)
-fastq_2=fast_q.combine(index_chan)
+fastq=fastq.combine(index_chan)//combine index and fastq for the mapping
 process mapping{
 	publishDir "BAM/"
 	
 	input:
-	tuple val(sampleID), file(r1), file(r2), path(r3) from fastq_2
+	tuple val(sampleID), file(r1), file(r2), path(r3) from fastq
 
 	output:
 	file "${sampleID}.bam" into bam_chan
