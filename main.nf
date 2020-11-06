@@ -93,8 +93,8 @@ process createGenomeIndex{
 	"""
 }
 
-fastq = Channel.fromFilePairs('fastq/*_{1,2}.fastq.gz', flat:true)
-fastq=fastq.combine(index_chan)//combine index and fastq for the mapping
+//fastq = Channel.fromFilePairs('fastq/*_{1,2}.fastq.gz', flat:true)
+//fastq=fastq.combine(index_chan)//combine index and fastq for the mapping
 process mapping{
 	publishDir "BAM/"
 	
