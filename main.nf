@@ -22,10 +22,11 @@ process fastqDump{
     publishDir "fastq/"
     
     input:
-	file sraFile from sraF
+	tuple val(sraid), file(sraFile) from sraf
 	
     output:
-	file "*.fastq.gz" into fastq
+	tuple val(sraid), file("*_1.fastq.gz"),file("*_2.fastq.gz") into fastq
+	
 
     script:
     """
@@ -34,13 +35,17 @@ process fastqDump{
     """
 }
 
+
 //Download annotation in .gtf
 process downloadGenomeAnnotation{
 
     publishDir "gtf/"
     
+    //input : val gtfURL
+    
     output:
     file "annot.gtf" into gtf
+    //
     
     script:
     """
@@ -70,7 +75,7 @@ process downloadHumanGenome{
     """
 }
     
-cpus = 16
+
 
 process createGenomeIndex{
 
@@ -84,7 +89,7 @@ process createGenomeIndex{
 
 	script:
 	"""
-	STAR --runThreadN ${cpus} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ${genome}
+	STAR --runThreadN ${task.cpus} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles ${genome}
 	"""
 }
 
@@ -94,10 +99,12 @@ process mapping{
 	publishDir "BAM/"
 	
 	input:
-	tuple val(sampleID), file(r1), file(r2), path(r3) from fastq
+	tuple val(sampleID), file(r1), file(r2) from fastq
+	path index from index_chan
+	// path index from index_chan.first()
 
 	output:
-	file "${sampleID}.bam" into bam_chan
+	file "${sampleID}.bam" into bam_chan, bam_chan2
 
 	script:
 	"""
@@ -106,15 +113,16 @@ process mapping{
 	--outFilterMultimapNmax 10 \
 	--genomeDir ${r3} \
 	--readFilesIn <(gunzip -c ${r1}) <(gunzip -c ${r2}) \
-	--runThreadN 16 \
+	--runThreadN ${task.cpus} \
 	--outSAMunmapped None \
 	--outSAMtype BAM SortedByCoordinate \
 	--outStd BAM_SortedByCoordinate \
 	--genomeLoad NoSharedMemory \
-	--limitBAMsortRAM 1123795813 \
+	--limitBAMsortRAM ${task.memory} \
 	> ${sampleID}.bam
 	"""
 }
+
 process samtools{
 	publishDir "bam/"
 	
@@ -123,11 +131,11 @@ process samtools{
 
 	output:
 	file "${bam_to_index}.bai" into end
-	file "$bam_to_index" into ready_to_count
+	
 	
 	script:
 	"""
-	samtools index $bam_to_index > ${bam_to_index.baseName}.bai
+	samtools index $bam_to_index 
 	"""
 }
 
@@ -135,7 +143,7 @@ process read_count{
 	publishDir "read_count/"
 
 	input:
-	file(bam) from ready_to_count
+	file(bam) from bam_chan2
 	file(gtf) from gtf
 
 	output:
@@ -144,5 +152,30 @@ process read_count{
 	script:
 	"""
 	featureCounts $bam -T $cpus -t gene -g gene_id -s 0 -a $gtf -o ${bam.baseName}.counts
+	//probablement à modifier $cpus par $task.cpus
 	"""
+}
+
+
+
+
+
+
+process script R{
+//version test
+
+	publishDir "DESeq/"
+
+	input:
+	file " from read_count 
+	
+	output:
+	file "result_DESeq.txt" into DESeq
+	
+	script:
+	"""
+	template "deseq2.R
+	"""
+	
+//option : écriture du script R directement dans script: """    """
 }
