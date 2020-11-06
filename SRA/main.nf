@@ -106,7 +106,7 @@ process mapping{
 	--outFilterMismatchNmax 4 \
 	--outFilterMultimapNmax 10 \
 	--genomeDir ref \
-	--readFilesIn <(gunzip -c ${r1}) <(gunzip -c ${r1}) \
+	--readFilesIn <(gunzip -c ${r1}) <(gunzip -c ${r2}) \
 	--runThreadN 16 \
 	--outSAMunmapped None \
 	--outSAMtype BAM SortedByCoordinate \
