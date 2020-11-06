@@ -80,7 +80,7 @@ process createGenomeIndex{
 	file (genome) from fasta.collectFile() //Put all the extracted files in a single one
 	
 	output:
-	file "ref" into index_chan 
+	path "ref" into index_chan 
 
 	script:
 	"""
@@ -89,13 +89,12 @@ process createGenomeIndex{
 }
 
 fastq = Channel.fromFilePairs('fastq/*_{1,2}.fastq.gz', flat:true)
-
+fastq_2=fast_q.combine(index_chan)
 process mapping{
 	publishDir "BAM/"
 	
 	input:
-	tuple val(sampleID), file(r1), file(r2) from fastq
-	file ref from index_chan
+	tuple val(sampleID), file(r1), file(r2), path(r3) from fastq_2
 
 	output:
 	file "${sampleID}.bam" into bam_chan
@@ -105,7 +104,7 @@ process mapping{
 	STAR --outSAMstrandField intronMotif \
 	--outFilterMismatchNmax 4 \
 	--outFilterMultimapNmax 10 \
-	--genomeDir ref \
+	--genomeDir ${r3} \
 	--readFilesIn <(gunzip -c ${r1}) <(gunzip -c ${r2}) \
 	--runThreadN 16 \
 	--outSAMunmapped None \
