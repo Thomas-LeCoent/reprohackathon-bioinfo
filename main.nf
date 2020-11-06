@@ -22,7 +22,7 @@ process fastqDump{
     publishDir "fastq/"
     
     input:
-	tuple val(sraid), file(sraFile) from sraf
+	tuple val(sraid), file(sraFile) from sraF
 	
     output:
 	tuple val(sraid), file("*_1.fastq.gz"),file("*_2.fastq.gz") into fastq
@@ -112,7 +112,7 @@ process mapping{
 	STAR --outSAMstrandField intronMotif \
 	--outFilterMismatchNmax 4 \
 	--outFilterMultimapNmax 10 \
-	--genomeDir ${r3} \
+	--genomeDir ${index} \
 	--readFilesIn <(gunzip -c ${r1}) <(gunzip -c ${r2}) \
 	--runThreadN ${task.cpus} \
 	--outSAMunmapped None \
