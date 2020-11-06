@@ -1,7 +1,7 @@
 //accesion id
 //SRAID=Channel.from("SRR628582", "SRR628583", "SRR628584", "SRR628585", "SRR628586", "SRR628587", "SRR628588", "SRR628589", "SRR636531", "SRR636532", "SRR636533")
 SRAID=Channel.from("SRR628585")
-
+gtfURL="ftp://ftp.ensembl.org/pub/release-101/gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz"
 //Download SRA files
 process downloadSRA{
 	publishDir "sraFiles/"
@@ -41,7 +41,8 @@ process downloadGenomeAnnotation{
 
     publishDir "gtf/"
     
-    //input : val gtfURL
+    input: 
+	val gtfURL from gtfURL
     
     output:
     file "annot.gtf" into gtf
@@ -49,7 +50,7 @@ process downloadGenomeAnnotation{
     
     script:
     """
-    wget ftp://ftp.ensembl.org/pub/release-101/gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz
+    wget ${gtfURL}
     gunzip -c *.gtf.gz > annot.gtf
     """
 }
