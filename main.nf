@@ -22,10 +22,10 @@ process fastqDump{
     publishDir "fastq/"
     
     input:
-	tuple val(sraid), file(sraFile) from sraF
+	file(sraFile) from sraF
 	
     output:
-	tuple val(sraid), file("*_1.fastq.gz"),file("*_2.fastq.gz") into fastq
+	tuple val(sraFile), file("*_1.fastq.gz"),file("*_2.fastq.gz") into fastq
 	
 
     script:
