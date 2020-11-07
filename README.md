@@ -10,5 +10,5 @@ To run the pipeline on IFB Cloub :  Appliance BioPipes :
 
 ```bash
 conda activate
-nextflow run main.nf -c nextflow.config -resume
+nextflow run main.nf -c nextflow.config -resume {-N emailAddress(for email report) -bg (for background execution) }
 ```
