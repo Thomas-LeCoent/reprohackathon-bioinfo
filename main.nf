@@ -1,36 +1,36 @@
 //accesion id
-//SRAID=Channel.from("SRR628582", "SRR628583", "SRR628584", "SRR628585", "SRR628586", "SRR628587", "SRR628588", "SRR628589", "SRR636531", "SRR636532", "SRR636533")
-SRAID=Channel.from("SRR628585")
-gtfURL="ftp://ftp.ensembl.org/pub/release-101/gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz"
+SRAID = Channel.from("SRR628582", "SRR628583", "SRR628584", "SRR628585", "SRR628586", "SRR628587", "SRR628588", "SRR628589", "SRR636531", "SRR636532", "SRR636533")
+// SRAID=Channel.from("SRR628585")
+
 //Download SRA files
 process downloadSRA{
-	publishDir "sraFiles/"
+	publishDir "downloadSRA/"
+
 	input:
-	val id from SRAID
+	val sraid from SRAID
+
 	output:
-	tuple file("${id}.sra"), val(id) into sraF
+		tuple val(sraid), file("${sraid}.sra") into sraFiles
 
 	script:
 	"""
-	wget -O ${id}.sra https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-5/${id}/${id}.1
+	wget -O ${sraid}.sra https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-5/${sraid}/${sraid}.1
 	"""
 }
 
-//Get fastq files from the sra
+// Get fastq files from the sra
 process fastqDump{
-
-    publishDir "fastq/"
+    publishDir "fastqDump/"
     
     input:
-	tuple file(sraFile), val(id) from sraF
+		tuple val(sraid), file(sra) from sraFiles
 	
     output:
-	tuple val(id), file("*_1.fastq.gz"),file("*_2.fastq.gz") into fastq
+		tuple val(sraid), file("*_1.fastq.gz"),file("*_2.fastq.gz") into fastq
 	
-
     script:
     """
-    fasterq-dump --split-files ${sraFile}
+    fasterq-dump --split-files ${sra}
     gzip *.fastq
     """
 }
@@ -39,10 +39,9 @@ process fastqDump{
 //Download annotation in .gtf
 process downloadGenomeAnnotation{
 
-    publishDir "gtf/"
+    publishDir "downloadGenomeAnnotation/"
     
-    input: 
-	val gtfURL from gtfURL
+    //input : val gtfURL
     
     output:
     file "annot.gtf" into gtf
@@ -50,7 +49,7 @@ process downloadGenomeAnnotation{
     
     script:
     """
-    wget ${gtfURL}
+    wget ftp://ftp.ensembl.org/pub/release-101/gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz
     gunzip -c *.gtf.gz > annot.gtf
     """
 }
@@ -61,7 +60,7 @@ ID=Channel.from(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"MT")
 //Download the references .fasta
 process downloadHumanGenome{
 
-    publishDir "fastagz/"
+    publishDir "downloadHumanGenome/"
     
     input:
         val id from ID
@@ -77,13 +76,12 @@ process downloadHumanGenome{
 }
     
 
-
 process createGenomeIndex{
 
-	publishDir "genomeIndex/"
+	publishDir "createGenomeIndex/"
 	
 	input:
-	file (genome) from fasta.collectFile() //Put all the extracted files in a single one
+	file (genome) from fasta.collectFile()
 	
 	output:
 	path "ref" into index_chan 
@@ -97,15 +95,15 @@ process createGenomeIndex{
 //fastq = Channel.fromFilePairs('fastq/*_{1,2}.fastq.gz', flat:true)
 //fastq=fastq.combine(index_chan)//combine index and fastq for the mapping
 process mapping{
-	publishDir "BAM/"
+	publishDir "mapping/"
 	
 	input:
-	tuple val(sampleID), file(r1), file(r2) from fastq
-	path index from index_chan
-	// path index from index_chan.first()
+	tuple val(sraid), file(r1), file(r2) from fastq
+	// path index from index_chan
+	path index from index_chan.first()
 
 	output:
-	file "${sampleID}.bam" into bam_chan, bam_chan2
+	file "${sraid}.bam" into bam_chan, bam_chan2
 
 	script:
 	"""
@@ -119,13 +117,13 @@ process mapping{
 	--outSAMtype BAM SortedByCoordinate \
 	--outStd BAM_SortedByCoordinate \
 	--genomeLoad NoSharedMemory \
-	--limitBAMsortRAM ${task.memory} \
-	> ${sampleID}.bam
+	--limitBAMsortRAM 1226906917 \
+	> ${sraid}.bam
 	"""
 }
 
 process samtools{
-	publishDir "bam/"
+	publishDir "samtools/"
 	
 	input:
 	file(bam_to_index) from bam_chan
@@ -140,43 +138,18 @@ process samtools{
 	"""
 }
 
-process read_count{
-	publishDir "read_count/"
+process featureCounts{
+	publishDir "featureCounts/"
 
 	input:
 	file(bam) from bam_chan2
 	file(gtf) from gtf
 
 	output:
-	file "${bam.baseName}.counts" into read_count
+	file "${bam.baseName}_counts.txt" into read_count
 
 	script:
 	"""
-	featureCounts $bam -T $cpus -t gene -g gene_id -s 0 -a $gtf -o ${bam.baseName}.counts
-	//probablement à modifier $cpus par $task.cpus
+	featureCounts $bam -T ${task.cpus} -t gene -g gene_id -s 0 -a $gtf -o ${bam.baseName}_counts.txt
 	"""
-}
-
-
-
-
-
-
-process script R{
-//version test
-
-	publishDir "DESeq/"
-
-	input:
-	file " from read_count 
-	
-	output:
-	file "result_DESeq.txt" into DESeq
-	
-	script:
-	"""
-	template "deseq2.R
-	"""
-	
-//option : écriture du script R directement dans script: """    """
 }
