@@ -117,7 +117,7 @@ process mapping{
 	--outSAMtype BAM SortedByCoordinate \
 	--outStd BAM_SortedByCoordinate \
 	--genomeLoad NoSharedMemory \
-	--limitBAMsortRAM 1226906917 \
+	--limitBAMsortRAM ${task.memory} \
 	> ${sraid}.bam
 	"""
 }
