@@ -8,7 +8,7 @@ process downloadSRA{
 	input:
 	val id from SRAID
 	output:
-	file "${id}.sra" into sraF
+	tuple file("${id}.sra"), val(id) into sraF
 
 	script:
 	"""
@@ -22,10 +22,10 @@ process fastqDump{
     publishDir "fastq/"
     
     input:
-	file(sraFile) from sraF
+	tuple file(sraFile), val(id) from sraF
 	
     output:
-	tuple val(sraFile), file("*_1.fastq.gz"),file("*_2.fastq.gz") into fastq
+	tuple val(id), file("*_1.fastq.gz"),file("*_2.fastq.gz") into fastq
 	
 
     script:
