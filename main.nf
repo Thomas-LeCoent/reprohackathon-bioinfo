@@ -169,3 +169,12 @@ process featureCounts{
 }
 */
 
+workflow.onComplete = {
+    println "Pipeline complete"
+    println "Command line: $workflow.commandLine"
+}
+
+
+workflow.onError = {
+    println "Oops .. something when wrong"
+}
