@@ -153,3 +153,14 @@ process featureCounts{
 	featureCounts $bam -T ${task.cpus} -t gene -g gene_id -s 0 -a $gtf -o ${bam.baseName}_counts.txt
 	"""
 }
+
+
+/* process DESeq{
+	//R version 4.0.3
+	
+
+
+
+}
+*/
+
