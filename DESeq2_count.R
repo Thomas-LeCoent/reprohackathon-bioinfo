@@ -21,10 +21,13 @@
 
 rm(list=ls())
 
-setwd("~/Desktop/M2AMI2B/featurecount")
+#testing
 samples<-read.table(file ="SRR628582_counts.txt",header = TRUE, sep='\t', row.names=1 )
 
+#need count matrix = cts
+#need table of simple information = coldata
 
+#Count matrix input example
 library("pasilla")
 pasCts <- system.file("extdata",
                       "pasilla_gene_counts.tsv",
@@ -32,14 +35,18 @@ pasCts <- system.file("extdata",
 pasAnno <- system.file("extdata",
                        "pasilla_sample_annotation.csv",
                        package="pasilla", mustWork=TRUE)
-cts <- as.matrix(read.csv(pasCts,sep="\t",row.names="gene_id"))
+
+#cts defined
+cts <- as.matrix(read.csv(pasCts,sep="\t",row.names="gene_id")) 
+
+#coldata defined
 coldata <- read.csv(pasAnno, row.names=1)
 coldata <- coldata[,c("condition","type")]
 coldata$condition <- factor(coldata$condition)
 coldata$type <- factor(coldata$type)
 
 
-
+#example from QUICK START
 dds <- DESeq2::DESeqDataSetFromMatrix(countData = cts,
                               colData = coldata,
                               design= ~ batch + condition)
