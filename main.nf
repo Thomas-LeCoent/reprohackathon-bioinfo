@@ -142,15 +142,15 @@ process featureCounts{
 	publishDir "featureCounts/"
 
 	input:
-	file(bam) from bam_chan2
+	file(bam) from bam_chan2.collect()
 	file(gtf) from gtf
 
 	output:
-	file "${bam.baseName}_counts.txt" into read_count
+	file "counts.txt" into read_count
 
 	script:
 	"""
-	featureCounts $bam -T ${task.cpus} -t gene -g gene_id -s 0 -a $gtf -o ${bam.baseName}_counts.txt
+	featureCounts $bam -T ${task.cpus} -t gene -g gene_id -s 0 -a $gtf -o counts.txt
 	"""
 }
 
