@@ -156,10 +156,15 @@ process featureCounts{
 
 
 /* process DESeq{
-	//R version 4.0.3
+
+	input:
+	file count from read_count
 	
-
-
+	output:
+	file "Result_DESeq.txt"
+	
+	script:
+	template "DESeq2_count.R"
 
 }
 */
