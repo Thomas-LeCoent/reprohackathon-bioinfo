@@ -4,7 +4,7 @@ SRAID = Channel.from("SRR628582", "SRR628583", "SRR628584", "SRR628585", "SRR628
 
 //Download SRA files
 process downloadSRA{
-	publishDir "downloadSRA/"
+	publishDir "files/downloadSRA/"
 
 	input:
 	val sraid from SRAID
@@ -20,7 +20,7 @@ process downloadSRA{
 
 // Get fastq files from the sra
 process fastqDump{
-    publishDir "fastqDump/"
+    publishDir "files/fastqDump/"
     
     input:
 		tuple val(sraid), file(sra) from sraFiles
@@ -39,7 +39,7 @@ process fastqDump{
 //Download annotation in .gtf
 process downloadGenomeAnnotation{
 
-    publishDir "downloadGenomeAnnotation/"
+    publishDir "files/downloadGenomeAnnotation/"
     
     //input : val gtfURL
     
@@ -60,7 +60,7 @@ ID=Channel.from(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"MT")
 //Download the references .fasta
 process downloadHumanGenome{
 
-    publishDir "downloadHumanGenome/"
+    publishDir "files/downloadHumanGenome/"
     
     input:
         val id from ID
@@ -78,7 +78,7 @@ process downloadHumanGenome{
 
 process createGenomeIndex{
 
-	publishDir "createGenomeIndex/"
+	publishDir "files/createGenomeIndex/"
 	
 	input:
 	file (genome) from fasta.collectFile()
@@ -95,7 +95,7 @@ process createGenomeIndex{
 //fastq = Channel.fromFilePairs('fastq/*_{1,2}.fastq.gz', flat:true)
 //fastq=fastq.combine(index_chan)//combine index and fastq for the mapping
 process mapping{
-	publishDir "mapping/"
+	publishDir "files/mapping/"
 	
 	input:
 	tuple val(sraid), file(r1), file(r2) from fastq
@@ -123,7 +123,7 @@ process mapping{
 }
 
 process samtools{
-	publishDir "samtools/"
+	publishDir "files/samtools/"
 	
 	input:
 	file(bam_to_index) from bam_chan
@@ -139,7 +139,7 @@ process samtools{
 }
 
 process featureCounts{
-	publishDir "featureCounts/"
+	publishDir "files/featureCounts/"
 
 	input:
 	file(bam) from bam_chan2.collect()
