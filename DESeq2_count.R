@@ -49,7 +49,7 @@ coldata$type <- factor(coldata$type)
 #example from QUICK START
 dds <- DESeq2::DESeqDataSetFromMatrix(countData = cts,
                               colData = coldata,
-                              design= ~ batch + condition)
+                              design= ~ condition + type)
 dds <- DESeq(dds)
 resultsNames(dds) # lists the coefficients
 res <- results(dds, name="condition_trt_vs_untrt")
