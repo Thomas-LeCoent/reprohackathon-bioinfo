@@ -4,8 +4,9 @@ The goal is to reproduce parts of the analysis described in these papers :<br>
   - https://pubmed.ncbi.nlm.nih.gov/23313955/<br>
   - https://pubmed.ncbi.nlm.nih.gov/23861464/<br>
   
+download at the site down below on "supplementary tables" to learn about the number of genes identified as presenting differential exon usage <br> 
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5321577/?fbclid=IwAR0N5sBxvbJ4imv3H0caQ9noRJc0qNsdUx0lCBThdPnL21DhyGFfpVwlq3s
-download supplementary tables to learn about the number of genes identified as presenting differential exon usage
+
 
 They performed RNA-Seq in samples from patients with uveal melanoma. Some samples are mutated in SF3B1. <br>
 
