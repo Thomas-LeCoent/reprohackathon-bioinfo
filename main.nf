@@ -150,7 +150,7 @@ process featureCounts{
 
 	script:
 	"""
-	featureCounts $bam -T ${task.cpus} -t gene -g gene_id -s 0 -a $gtf -o counts.txt
+	featureCounts $bam -T ${task.cpus} -t gene -g gene_id -s 0 -a $gtf -o counts.txt -p
 	"""
 }
 
