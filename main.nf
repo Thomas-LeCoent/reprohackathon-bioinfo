@@ -155,19 +155,14 @@ process featureCounts{
 }
 
 
-/* process DESeq{
+process DESeq{
 
 	input:
 	file count from read_count
-	
-	output:
-	file "Result_DESeq.txt"
-	
+
 	script:
 	template "DESeq2_count.R"
-
 }
-*/
 
 workflow.onComplete = {
     println "Pipeline complete"
