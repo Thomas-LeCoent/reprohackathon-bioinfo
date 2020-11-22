@@ -18,42 +18,25 @@
 # 
 # BiocManager::install("Rsubread")
 # 
-
 rm(list=ls())
 
-#testing
-samples<-read.table(file ="SRR628582_counts.txt",header = TRUE, sep='\t', row.names=1 )
+library("DESeq2")
+#order columns
+col_order=c("Geneid", "SRR628582.bam", "SRR628583.bam", "SRR628584.bam", "SRR628585.bam", "SRR628586.bam", "SRR628587.bam", "SRR628588.bam", "SRR628589.bam")
+samples<-read.table(file ="counts.txt",header = TRUE, sep='\t', )
+#head(samples)
+newsample=subset(samples, select=-c(Chr, Start, End, Strand, Length))
+newsample <- newsample[, col_order]
+metaDat=read.csv("descriptionMutation.txt", header=TRUE, sep=";")
 
-#need count matrix = cts
-#need table of simple information = coldata
+#DESeq
+dds <- DESeqDataSetFromMatrix(countData=newsample, 
+                              colData=metaDat, 
+                              design=~mutation, tidy = TRUE)
 
-#Count matrix input example
-library("pasilla")
-pasCts <- system.file("extdata",
-                      "pasilla_gene_counts.tsv",
-                      package="pasilla", mustWork=TRUE)
-pasAnno <- system.file("extdata",
-                       "pasilla_sample_annotation.csv",
-                       package="pasilla", mustWork=TRUE)
-
-#cts defined
-cts <- as.matrix(read.csv(pasCts,sep="\t",row.names="gene_id")) 
-
-#coldata defined
-coldata <- read.csv(pasAnno, row.names=1)
-coldata <- coldata[,c("condition","type")]
-coldata$condition <- factor(coldata$condition)
-coldata$type <- factor(coldata$type)
-
-
-#example from QUICK START
-dds <- DESeq2::DESeqDataSetFromMatrix(countData = cts,
-                              colData = coldata,
-                              design= ~ condition + type)
 dds <- DESeq(dds)
-resultsNames(dds) # lists the coefficients
-res <- results(dds, name="condition_trt_vs_untrt")
-# or to shrink log fold changes association with condition:
-res <- lfcShrink(dds, coef="condition_trt_vs_untrt", type="apeglm")
 
+res <- results(dds, name="mutation_WT_vs_R625C", alpha = 0.05)
+
+table(res$padj<0.05)
 
