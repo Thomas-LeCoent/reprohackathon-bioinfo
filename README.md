@@ -12,7 +12,7 @@ They performed RNA-Seq in samples from patients with uveal melanoma. Some sample
 
 Data from the studies are avalaible at : http://www.ncbi.nlm.nih.gov/sra?term=SRA062359
 
-At least 8 cpus and 32GB of RAM are required to run the pipeline.
+At least 8 cpus and 40GB of RAM are required to run the pipeline.
 
 To run the pipeline on IFB Cloub on Appliance BioPipes :
 ```bash
