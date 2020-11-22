@@ -158,7 +158,7 @@ process featureCounts{
 }
 
 
- process Deseq2{
+process Deseq2{
 
 	input:
 	file count from read_count
@@ -169,7 +169,6 @@ process featureCounts{
 	
 	script:
 	template "DESeq2_count.R"
-
 }
 
 
