@@ -169,6 +169,14 @@ process featureCounts{
 	
 	script:
 	"""
+	
+	
+	if (!requireNamespace("BiocManager", quietly = TRUE))
+  		install.packages("BiocManager")
+
+	BiocManager::install("DESeq2")
+
+	
 	#!/usr/bin/env Rscript
 	rm(list=ls())
 	library("DESeq2")
@@ -181,8 +189,8 @@ process featureCounts{
 	metaDat=read.csv(${des}, header=TRUE, sep=";")
 	#DESeq
 	dds <- DESeqDataSetFromMatrix(countData=newsample, 
-								colData=metaDat, 
-								design=~mutation, tidy = TRUE)
+					colData=metaDat, 
+					design=~mutation, tidy = TRUE)
 
 	dds <- DESeq(dds)
 
@@ -190,6 +198,15 @@ process featureCounts{
 
 	#table(res\$padj<0.05)
 	length(res\$padj[which(res\$padj<0.05)])
+	
+	
+	library(EnhancedVolcano)
+
+	EnhancedVolcano(res,
+                lab = rownames(res),
+                x = 'log2FoldChange',
+                y = 'pvalue')
+	
 	"""
 
 }
