@@ -165,7 +165,7 @@ process Deseq2{
 	file des from description
 	
 	output:
-	stdout into final
+	stdout into fin
 	
 	script:
 	template "DESeq2_count.R"
