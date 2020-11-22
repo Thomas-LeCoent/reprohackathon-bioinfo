@@ -1,3 +1,6 @@
+//param
+description=Channel.fromPath("./descriptionMutation.txt")
+
 //accesion id
 SRAID = Channel.from("SRR628582", "SRR628583", "SRR628584", "SRR628585", "SRR628586", "SRR628587", "SRR628588", "SRR628589")
 // SRAID=Channel.from("SRR628585")
@@ -155,19 +158,42 @@ process featureCounts{
 }
 
 
-/* process DESeq{
+ process Deseq2{
 
 	input:
 	file count from read_count
+	file des from description
 	
 	output:
-	file "Result_DESeq.txt"
+	stdout into final
 	
 	script:
-	template "DESeq2_count.R"
+	"""
+	#!/usr/bin/env Rscript
+	rm(list=ls())
+	library("DESeq2")
+	#order columns
+	col_order=c("Geneid", "SRR628582.bam", "SRR628583.bam", "SRR628584.bam", "SRR628585.bam", "SRR628586.bam", "SRR628587.bam", "SRR628588.bam", "SRR628589.bam")
+	samples<-read.table(file =${count},header = TRUE, sep='\t', )
+	#head(samples)
+	newsample=subset(samples, select=-c(Chr, Start, End, Strand, Length))
+	newsample <- newsample[, col_order]
+	metaDat=read.csv(${des}, header=TRUE, sep=";")
+	#DESeq
+	dds <- DESeqDataSetFromMatrix(countData=newsample, 
+								colData=metaDat, 
+								design=~mutation, tidy = TRUE)
+
+	dds <- DESeq(dds)
+
+	res <- results(dds, name="mutation_WT_vs_R625C", alpha = 0.05)
+
+	#table(res\$padj<0.05)
+	length(res\$padj[which(res\$padj<0.05)])
+	"""
 
 }
-*/
+
 
 workflow.onComplete = {
     println "Pipeline complete"
