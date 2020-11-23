@@ -20,5 +20,5 @@ res <- results(dds, name="mutation_WT_vs_R625C", alpha = 0.05)
 
 #table(res\$padj<0.05)[2]
 
-length(res\$padj[which(res\$padj<0.05)])
-
+nbgenes=length(res\$padj[which(res\$padj<0.05)])
+cat(nbgenes, file="results.txt")
