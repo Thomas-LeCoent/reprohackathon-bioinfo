@@ -1,5 +1,6 @@
 //param
 description=Channel.fromPath("./descriptionMutation.txt")
+read_count=Channel.fromPath("./files/featureCounts/counts.txt")
 
 //accesion id
 SRAID = Channel.from("SRR628582", "SRR628583", "SRR628584", "SRR628585", "SRR628586", "SRR628587", "SRR628588", "SRR628589")
@@ -10,7 +11,7 @@ SRAID = Channel.from("SRR628582", "SRR628583", "SRR628584", "SRR628585", "SRR628
 process Deseq2{
 	publishDir "fileDESeq/Results/"
 	input:
-	file "counts.txt" from read_count
+	file count from read_count
 	file des from description
 	
 	output:
