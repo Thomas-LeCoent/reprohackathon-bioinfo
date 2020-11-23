@@ -159,13 +159,13 @@ process featureCounts{
 
 
 process Deseq2{
-
+	publishDir "files/Results/"
 	input:
 	file count from read_count
 	file des from description
 	
 	output:
-	stdout into fin
+	file("results.txt") into fin
 	
 	script:
 	template "DESeq2_count.R"
