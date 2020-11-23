@@ -10,7 +10,7 @@ SRAID = Channel.from("SRR628582", "SRR628583", "SRR628584", "SRR628585", "SRR628
 process Deseq2{
 	publishDir "fileDESeq/Results/"
 	input:
-	file count from read_count
+	file "counts.txt" from read_count
 	file des from description
 	
 	output:
