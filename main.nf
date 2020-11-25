@@ -158,14 +158,17 @@ process featureCounts{
 }
 
 
+
 process Deseq2{
 	publishDir "files/Results/"
 	input:
 	file count from read_count
 	file des from description
 	
+	
+	//write output name for each plot needed
 	output:
-	file("results.txt") into fin
+	tuple file("results.txt"),file("volcano.pdf") into fin
 	
 	script:
 	template "DESeq2_count.R"
