@@ -8,6 +8,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
 BiocManager::install("EnhancedVolcano")
+BiocManager::install("EnsDb.Hsapiens.v79")
 
 ###########################################################
 
@@ -29,8 +30,21 @@ dds <- DESeq(dds)
 
 res <- results(dds, name="mutation_WT_vs_R625C", alpha = 0.05)
 
+library("EnsDb.Hsapiens.v79")
+
+id_and_pvalues <- data.frame(cbind(rownames(res[which(res$padj < 0.05),]), res[which(res\$padj<0.05),]\$padj))
+colnames(id_and_pvalues) = c("GENEID", "padj")
+
+geneids <- rownames(res[which(res\$padj < 0.05),])
+genes <- ensembldb::select(EnsDb.Hsapiens.v79, keys= geneids, keytype = "GENEID", column = c("GENENAME"))
+
+results <- merge(genes, id_and_pvalues, all.y = T)
+
+write.csv(results, file= "results.txt", row.names = F)
+
 #table(res\$padj<0.05)[2]
 
+###########################################################
 
 library("EnhancedVolcano")
 pdf(paste0("volcano.pdf"))
@@ -42,6 +56,3 @@ EnhancedVolcano(res,
                 y = 'pvalue')
 
 dev.off()
-
-nbgenes=length(res\$padj[which(res\$padj<0.05)])
-cat(nbgenes, file="results.txt")
