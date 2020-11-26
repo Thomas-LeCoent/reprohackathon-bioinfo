@@ -31,14 +31,13 @@ dds <- DESeq(dds)
 res <- results(dds, name="mutation_WT_vs_R625C", alpha = 0.05)
 
 library("EnsDb.Hsapiens.v79")
-
-id_and_pvalues <- data.frame(cbind(rownames(res[which(res$padj < 0.05),]), res[which(res\$padj<0.05),]\$padj))
-colnames(id_and_pvalues) = c("GENEID", "padj")
-
 geneids <- rownames(res[which(res\$padj < 0.05),])
-genes <- ensembldb::select(EnsDb.Hsapiens.v79, keys= geneids, keytype = "GENEID", column = c("GENENAME"))
+genes <- ensembldb::select(EnsDb.Hsapiens.v79, keys = geneids, keytype = "GENEID", column = c("GENENAME"))
 
-results <- merge(genes, id_and_pvalues, all.y = T)
+res.df <- data.frame(cbind(rownames(res[which(res\$padj < 0.05),]), res[which(res\$"padj" < 0.05),]))
+names(res.df)[names(res.df) == colnames(res.df)[[1]]] <- "GENEID"
+results <- merge(genes, res.df, all.y = T)
+
 
 write.csv(results, file= "results.txt", row.names = F)
 
