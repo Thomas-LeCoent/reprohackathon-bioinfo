@@ -20,5 +20,4 @@ conda activate
 nextflow run main.nf -c nextflow.config -resume {-N emailAddress(for email report) -bg (for background execution) }
 ```
 
-
-
+Results of the pipeline can be found in /files/results/results.txt
